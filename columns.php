@@ -5,23 +5,29 @@
  *
  * @author Bastian Allgeier <bastian@getkirby.com>
  * @version 1.0.0
+ *
  */
-kirbytext::$pre[] = function($kirbytext, $text) {
 
-  $text = preg_replace_callback('!\(columns(…|\.{3})\)(.*?)\((…|\.{3})columns\)!is', function($matches) use($kirbytext) {
+Kirby::plugin('calliope/columnsTag', [
+  'hooks' => [
+      'kirbytext:before' => function ($text) {
 
-    $columns = preg_split('!(\n|\r\n)\+{4}\s+(\n|\r\n)!', $matches[2]);
-    $html    = array();
+          // KirbyTags have not been parsed
+          $text = preg_replace_callback('!\(columns(…|\.{3})\)(.*?)\((…|\.{3})columns\)!is', function($matches) {
+            $columns = preg_split('!(\n|\r\n)\+{4}\s+(\n|\r\n)!', $matches[2]);
+            $html    = array();
+            $count   = count($columns);
 
-    foreach($columns as $column) {
-      $field = new Field($kirbytext->field->page, null, trim($column));
-      $html[] = '<div class="' . c::get('columns.item', 'column') . '">' . kirbytext($field) . '</div>';
-    }
+            foreach($columns as $column) {
+              $html[] = '<div class="col-'.$count.'">' . kirbytext(trim($column)) . '</div>';
+            }
 
-    return '<div class="' . c::get('columns.container', 'columns') . ' ' . c::get('columns.container', 'columns') . '-' . count($columns) . '">' . implode($html) . '</div>';
+            return '<div class="cols">' . implode($html) . '</div>';
 
-  }, $text);
+          }, $text);
 
-  return $text;
+          return $text;
 
-};
+      },
+  ]
+]);
