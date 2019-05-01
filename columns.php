@@ -8,7 +8,7 @@
  *
  */
 
-Kirby::plugin('calliope/columnsTag', [
+Kirby::plugin('getkirby/columnsPlugin', [
   'hooks' => [
       'kirbytext:before' => function ($text) {
 
